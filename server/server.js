@@ -1,9 +1,10 @@
 import express from "express";
-import mongoose from 'mongoose'
+import mongoose from "mongoose";
 import dotenv from "dotenv";
 
 import notFoundMiddleWare from "./middleware/not-found.js";
 import errorHandlerMiddleware from "./middleware/error-handler.js";
+import connectDB from "./db/connect.js";
 
 dotenv.config();
 
@@ -25,21 +26,25 @@ app.use(notFoundMiddleWare);
 
 app.use(errorHandlerMiddleware);
 
-mongoose.set('strictQuery', true)
+mongoose.set("strictQuery", true);
+
 mongoose.connection.once("open", () => {
     console.log("MongoDB connection ready");
   });
-  
+
   mongoose.connection.on("error", (err) => {
     console.error(err);
   });
-  async function startServer() {
-    await mongoose.connect(process.env.MONGO_URI, {});
-  
+
+const startServer = async () => {
+  try {
+    await connectDB(process.env.MONGO_URI);
     app.listen(PORT, () => {
       console.log(`Listening on port ${PORT}...`);
     });
+  } catch (err) {
+    console.error(err);
   }
-  
+};
 
-startServer()
+startServer();
