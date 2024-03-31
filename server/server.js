@@ -1,16 +1,19 @@
 import express from "express";
-import mongoose from "mongoose";
 import dotenv from "dotenv";
 
+// routes
+import authRouter from "./routes/auth.router.js";
+import jobsRouter from "./routes/jobs.router.js";
+
+// use middleware
 import notFoundMiddleWare from "./middleware/not-found.js";
 import errorHandlerMiddleware from "./middleware/error-handler.js";
-import connectDB from "./db/connect.js";
+
+import startServer from "./db/startServer.js";
 
 dotenv.config();
 
 const app = express();
-
-const PORT = process.env.PORT || 5000;
 
 app.use(express.json());
 
@@ -22,29 +25,10 @@ app.get("/error", (req, res) => {
   throw new Error("There was an error");
 });
 
-app.use(notFoundMiddleWare);
+app.use("/api/v1", authRouter);
+app.use("/api/v1", jobsRouter);
 
+app.use(notFoundMiddleWare);
 app.use(errorHandlerMiddleware);
 
-mongoose.set("strictQuery", true);
-
-mongoose.connection.once("open", () => {
-    console.log("MongoDB connection ready");
-  });
-
-  mongoose.connection.on("error", (err) => {
-    console.error(err);
-  });
-
-const startServer = async () => {
-  try {
-    await connectDB(process.env.MONGO_URI);
-    app.listen(PORT, () => {
-      console.log(`Listening on port ${PORT}...`);
-    });
-  } catch (err) {
-    console.error(err);
-  }
-};
-
-startServer();
+startServer(app);
