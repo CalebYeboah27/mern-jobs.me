@@ -24,6 +24,20 @@ app.use(notFoundMiddleWare);
 
 app.use(errorHandlerMiddleware);
 
-app.listen(PORT, () => {
-  `Server listening on port ${PORT}...`;
-});
+mongoose.connection.once("open", () => {
+    console.log("MongoDB connection ready");
+  });
+  
+  mongoose.connection.on("error", (err) => {
+    console.error(err);
+  });
+  async function startServer() {
+    await mongoose.connect(process.env.MONGO_URI, {});
+  
+    app.listen(PORT, () => {
+      console.log(`Listening on port ${PORT}...`);
+    });
+  }
+  
+
+startServer()
