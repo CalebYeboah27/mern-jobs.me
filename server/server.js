@@ -1,4 +1,5 @@
 import express from "express";
+import mongoose from 'mongoose'
 import dotenv from "dotenv";
 
 import notFoundMiddleWare from "./middleware/not-found.js";
@@ -24,6 +25,7 @@ app.use(notFoundMiddleWare);
 
 app.use(errorHandlerMiddleware);
 
+mongoose.set('strictQuery', true)
 mongoose.connection.once("open", () => {
     console.log("MongoDB connection ready");
   });
