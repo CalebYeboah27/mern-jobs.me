@@ -25,7 +25,7 @@ app.get("/error", (req, res) => {
   throw new Error("There was an error");
 });
 
-app.use("/api/v1", authRouter);
+app.use("/api/v1/auth", authRouter);
 app.use("/api/v1", jobsRouter);
 
 app.use(notFoundMiddleWare);
